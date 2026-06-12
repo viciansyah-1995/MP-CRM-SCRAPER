@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MP-CRM-SCRAPER Sample UI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-soft: #1f2937;
+      --line: #2f3a4f;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --blue: #3b82f6;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr 420px;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #0b1220;
+      border-right: 1px solid var(--line);
+      padding: 24px 18px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 28px;
+    }
+
+    .brand span { color: var(--green); }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: transparent;
+    }
+
+    .nav a.active {
+      background: rgba(59,130,246,0.12);
+      color: var(--white);
+      border: 1px solid rgba(59,130,246,0.25);
+    }
+
+    .main {
+      padding: 24px;
+      border-right: 1px solid var(--line);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 8px;
+    }
+
+    .page-sub {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .chip, .btn {
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .btn.primary { background: var(--blue); border-color: var(--blue); }
+    .btn.success { background: var(--green); border-color: var(--green); color: #07110a; font-weight: 700; }
+    .btn.danger { background: var(--red); border-color: var(--red); color: var(--white); font-weight: 700; }
+
+    .order-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .order-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      background: #0f1b2f;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .order-id {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .order-meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge.hide { background: rgba(239,68,68,0.15); color: #fecaca; }
+    .badge.unhide { background: rgba(34,197,94,0.15); color: #bbf7d0; }
+
+    .order-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .detail {
+      padding: 24px;
+      background: #0b1220;
+    }
+
+    .detail h2 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+    }
+
+    .detail-box {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 16px;
+      line-height: 1.7;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 8px 12px;
+      font-size: 14px;
+    }
+
+    .kv .key { color: var(--muted); }
+
+    .queue-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: #0d1a2a;
+      margin-top: 10px;
+    }
+
+    .queue-item strong { display: block; margin-bottom: 4px; }
+
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 220px 1fr; }
+      .detail { grid-column: 1 / -1; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar, .main, .detail { border-right: 0; }
+      .sidebar { border-bottom: 1px solid var(--line); }
+      .main { border-bottom: 1px solid var(--line); }
+      .kv { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">MP-CRM-<span>SCRAPER</span></div>
+      <nav class="nav">
+        <a href="#">Dashboard</a>
+        <a href="#" class="active">TikTok Detail Order</a>
+        <a href="#">Shopee</a>
+        <a href="#">CRM Queue</a>
+        <a href="#">Export</a>
+        <a href="#">Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="panel">
+        <h1 class="page-title">TikTok Order Review</h1>
+        <p class="page-sub">
+          Flow fokus pada order list → detail order → validasi customer → hide/unhide → antrean follow-up CRM.
+        </p>
+        <div class="toolbar">
+          <div class="chip">Platform: TikTok Shop</div>
+          <div class="chip">Date Range: 01 Jun 2026 - 12 Jun 2026</div>
+          <button class="btn primary">Start Scrape</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Order List</div>
+        <div class="order-list">
+          <div class="order-card">
+            <div class="order-top">
+              <div>
+                <div class="order-id">#TT-20260612-001</div>
+                <div class="order-meta">Customer: Dian P. • Total: Rp 189.000 • 2 items</div>
+              </div>
+              <span class="badge unhide">UNHIDE</span>
+            </div>
+            <div class="order-meta">Status: Paid • Channel: TikTok Shop • Last sync: 12 Jun 2026 12:05</div>
+            <div class="order-actions">
+              <button class="btn">Open Detail</button>
+              <button class="btn success">Mark Unhide</button>
+              <button class="btn danger">Mark Hide</button>
+            </div>
+          </div>
+
+          <div class="order-card">
+            <div class="order-top">
+              <div>
+                <div class="order-id">#TT-20260612-002</div>
+                <div class="order-meta">Customer: Rina S. • Total: Rp 75.000 • 1 item</div>
+              </div>
+              <span class="badge hide">HIDE</span>
+            </div>
+            <div class="order-meta">Status: Delivered • Channel: TikTok Shop • Last sync: 12 Jun 2026 12:07</div>
+            <div class="order-actions">
+              <button class="btn">Open Detail</button>
+              <button class="btn success">Mark Unhide</button>
+              <button class="btn danger">Mark Hide</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="detail">
+      <h2>Order Detail Panel</h2>
+
+      <div class="section-title">Order Summary</div>
+      <div class="detail-box kv">
+        <div class="key">Order ID</div><div>#TT-20260612-001</div>
+        <div class="key">Order Date</div><div>12 Jun 2026 11:58</div>
+        <div class="key">Status</div><div>Paid</div>
+        <div class="key">Total</div><div>Rp 189.000</div>
+      </div>
+
+      <div class="section-title">Customer Detail</div>
+      <div class="detail-box kv">
+        <div class="key">Nama</div><div>Dian Permata</div>
+        <div class="key">Phone</div><div>08xx-xxxx-1122</div>
+        <div class="key">Alamat</div><div>Jl. Melati No. 88, Bandung</div>
+        <div class="key">Visibility</div><div><span class="badge unhide">UNHIDE</span></div>
+      </div>
+
+      <div class="section-title">Produk</div>
+      <div class="detail-box">
+        1x Serum A — Rp 99.000<br>
+        1x Sunscreen B — Rp 90.000
+      </div>
+
+      <div class="section-title">CRM Action</div>
+      <div class="detail-box">
+        <div class="order-actions">
+          <button class="btn success">Set Unhide & Push to CRM Queue</button>
+          <button class="btn danger">Set Hide</button>
+        </div>
+        <p style="color:#94a3b8; margin:12px 0 0; font-size:14px; line-height:1.6;">
+          Hanya customer dengan status <strong style="color:#bbf7d0;">unhide</strong> yang akan muncul di antrean follow-up CRM.
+          Setiap perubahan harus disimpan bersama reason, actor, dan timestamp.
+        </p>
+      </div>
+
+      <div class="section-title">CRM Follow-up Queue Preview</div>
+      <div class="queue-item">
+        <strong>Dian Permata</strong>
+        <div style="color:#94a3b8; font-size:14px;">Source: TikTok Shop • Last order: #TT-20260612-001 • Status: Ready for CRM</div>
+      </div>
+      <div class="queue-item">
+        <strong>Rina Safitri</strong>
+        <div style="color:#94a3b8; font-size:14px;">Source: TikTok Shop • Status: Hidden / not ready for follow-up</div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

@@ -23,6 +23,15 @@ Saat ini tidak ada cara easy untuk get data customer dari kedua platform secara 
 ### Proposed Solution
 Aplikasi desktop yang bisa scrape customer data dari TikTok Shop dan Shopee dengan authorized access (login manual / API resmi kalau ada).
 
+### Scope Clarification — CRM Follow-up Flow
+Untuk TikTok Shop, data customer yang sensitif dan siap follow-up diasumsikan diambil saat user membuka **detail order**. Pada layar detail order, sistem internal perlu mengakomodasi status **hide / unhide** agar tim CRM dapat menentukan data mana yang siap diproses untuk follow-up dan mana yang harus tetap disembunyikan.
+
+Implikasi scope:
+- scraping tidak cukup berhenti di order list; harus bisa masuk ke detail order
+- sistem perlu menyimpan status visibilitas data customer per order/customer
+- tim CRM hanya memproses data customer dengan status `unhide` / visible
+- audit log perlu mencatat perubahan status hide/unhide untuk kebutuhan kontrol internal
+
 ---
 
 ## 2. Goals & Objectives
@@ -51,6 +60,8 @@ Aplikasi desktop yang bisa scrape customer data dari TikTok Shop dan Shopee deng
 |------|-----------|---------|
 | Sales Person | Login ke TikTok/Shopee via app | Saya bisa akses data order customer |
 | Sales Person | Ambil data customer (nama, no HP, alamat, produk yang dibeli) | Saya bisa buat leads list |
+| Sales Person | Buka detail order TikTok untuk mengambil data customer yang lebih lengkap | Saya bisa memastikan data yang masuk memang berasal dari order detail |
+| CRM Team | Menandai data customer sebagai hide atau unhide | Saya bisa mengontrol data mana yang siap difollow up |
 | Sales Person | Filter data berdasarkan date range, produk, lokasi | Saya bisa target market yang tepat |
 | Marketing | Export data ke CSV/Excel | Saya bisa import ke CRM saya |
 | Admin | Lihat history scraping dan status | Saya bisa monitor penggunaan |
@@ -68,10 +79,14 @@ Aplikasi desktop yang bisa scrape customer data dari TikTok Shop dan Shopee deng
 
 ### FR-02: Data Extraction - TikTok Shop
 - **FR-02-01**: Ambil data order dari TikTok Shop
-- **FR-02-02**: Ambil customer info: nama, phone, email (kalau ada), address
-- **FR-02-03**: Ambil produk yang dibeli, qty, price
-- **FR-02-04**: Filter berdasarkan date range
-- **FR-02-05**: Pagination support (ambil semua halaman)
+- **FR-02-02**: Masuk ke halaman **detail order** untuk mengambil data customer yang lebih lengkap
+- **FR-02-03**: Ambil customer info: nama, phone, email (kalau ada), address
+- **FR-02-04**: Ambil produk yang dibeli, qty, price
+- **FR-02-05**: Filter berdasarkan date range
+- **FR-02-06**: Pagination support (ambil semua halaman)
+- **FR-02-07**: Simpan status visibilitas data customer per order: `hide` / `unhide`
+- **FR-02-08**: Hanya data dengan status `unhide` yang dianggap siap untuk follow-up CRM
+- **FR-02-09**: Catat audit log saat status hide/unhide berubah
 
 ### FR-03: Data Extraction - Shopee
 - **FR-03-01**: Ambil data order dari Shopee
@@ -84,7 +99,9 @@ Aplikasi desktop yang bisa scrape customer data dari TikTok Shop dan Shopee deng
 - **FR-04-01**: Simpan data ke SQLite (local)
 - **FR-04-02**: Option untuk PostgreSQL (remote)
 - **FR-04-03**: Table untuk: customers, orders, products, scrape_logs
-- **FR-04-04**: Timestamp untuk setiap scrape operation
+- **FR-04-04**: Tambahkan penyimpanan status visibilitas customer/order: `hide` / `unhide`
+- **FR-04-05**: Tambahkan audit metadata: di-hide oleh siapa, di-unhide oleh siapa, kapan berubah
+- **FR-04-06**: Timestamp untuk setiap scrape operation
 
 ### FR-05: Data Export
 - **FR-05-01**: Export ke CSV
@@ -259,6 +276,9 @@ User Login → Select Platform → Scrape Orders → Process Data → Store to D
 - "Start Scrape" button (besar, prominent)
 - Progress bar during scrape
 - Results preview table
+- Akses ke **detail order** dari daftar order
+- Di layar/detail panel order, tampilkan status **hide / unhide** customer
+- Hanya order/customer `unhide` yang masuk ke antrean follow-up CRM
 - Export button
 
 ### Screen 3: Shopee Scraper

@@ -13,7 +13,7 @@ Tim sales dan marketing membutuhkan data customer dari marketplace untuk:
 - Mengidentifikasi calon customer potensial
 - Melakukan customer profiling berdasarkan riwayat pembelian
 - Mengirim targeted marketing campaign
-- Mengisi dan memperkaya data CRM yang ada; do not invent and preserve exact formatting? oldText has semicolon no. newText no exact? okay. let's do separate edits. file contains exact. need more edits multiple. Use edit around snippets.
+- Mengisi dan memperkaya data CRM yang ada
 
 Saat ini, tidak ada solusi internal yang efektif untuk mendapatkan data ini secara efisien dan terstruktur.
 
@@ -23,6 +23,14 @@ Aplikasi desktop yang dapat:
 - Mengekstrak data order dan customer
 - Menyimpan data ke database lokal
 - Mengekspor data ke format CSV/Excel untuk diimpor ke CRM
+
+### Scope Clarification — TikTok Detail Order & CRM Visibility
+Untuk TikTok Shop, pengambilan data customer tidak hanya mengandalkan daftar order. Sistem harus mampu masuk ke **detail order** untuk memperoleh data customer yang lebih lengkap. Selain itu, perlu ada status **hide / unhide** pada data customer di level order/detail agar tim CRM hanya melakukan follow-up pada data yang memang sudah ditandai `unhide` atau visible.
+
+Konsekuensi terhadap scope:
+- proses scraping TikTok harus mencakup navigasi ke detail order
+- sistem harus menyimpan status visibilitas customer/order
+- perubahan hide/unhide harus tercatat untuk kebutuhan audit internal
 
 ## 1.4 Target Users
 | User Role | Description |
@@ -54,13 +62,15 @@ Aplikasi desktop yang dapat:
 | US-01 | Sales Person | Saya ingin login ke TikTok Shop melalui aplikasi | Dapat melakukan login dengan kredensial, session tersimpan |
 | US-02 | Sales Person | Saya ingin login ke Shopee melalui aplikasi | Dapat melakukan login dengan kredensial, session tersimpan |
 | US-03 | Sales Person | Saya ingin scrape data customer dari TikTok Shop | Data customer (nama, phone, alamat, order) berhasil diambil dan tersimpan |
-| US-04 | Sales Person | Saya ingin scrape data customer dari Shopee | Data customer (nama, phone, alamat, order) berhasil diambil dan tersimpan |
-| US-05 | Sales Person | Saya ingin filter data berdasarkan rentang tanggal | Hanya data dalam rentang tanggal yang dipilih yang diproses |
-| US-06 | Sales Person | Saya ingin export data ke CSV | File CSV berhasil di-generate dengan semua field yang dipilih |
-| US-07 | Sales Person | Saya ingin export data ke Excel | File Excel berhasil di-generate dengan formatting yang baik |
-| US-08 | Marketing | Saya ingin melihat dashboard customer insights | Dashboard menampilkan total customer, order, dan distribusi berdasarkan lokasi |
-| US-09 | Admin | Saya ingin melihat log scraping history | Semua operasi scraping tercatat dengan timestamp dan status |
-| US-10 | Admin | Saya ingin atur jadwal scraping otomatis | Aplikasi dapat menjalankan scrape secara terjadwal tanpa interaksi user |
+| US-04 | Sales Person | Saya ingin membuka detail order TikTok untuk mengambil data customer yang lebih lengkap | Sistem dapat menavigasi ke detail order dan mengekstrak data tambahan yang diperlukan |
+| US-05 | CRM Team | Saya ingin menandai data customer sebagai hide atau unhide | Hanya data dengan status unhide yang siap difollow up |
+| US-06 | Sales Person | Saya ingin scrape data customer dari Shopee | Data customer (nama, phone, alamat, order) berhasil diambil dan tersimpan |
+| US-07 | Sales Person | Saya ingin filter data berdasarkan rentang tanggal | Hanya data dalam rentang tanggal yang dipilih yang diproses |
+| US-08 | Sales Person | Saya ingin export data ke CSV | File CSV berhasil di-generate dengan semua field yang dipilih |
+| US-09 | Sales Person | Saya ingin export data ke Excel | File Excel berhasil di-generate dengan formatting yang baik |
+| US-10 | Marketing | Saya ingin melihat dashboard customer insights | Dashboard menampilkan total customer, order, dan distribusi berdasarkan lokasi |
+| US-11 | Admin | Saya ingin melihat log scraping history | Semua operasi scraping tercatat dengan timestamp dan status |
+| US-12 | Admin | Saya ingin atur jadwal scraping otomatis | Aplikasi dapat menjalankan scrape secara terjadwal tanpa interaksi user |
 
 ---
 
@@ -81,13 +91,17 @@ Aplikasi desktop yang dapat:
 | FR-ID | Requirement | Priority |
 |-------|-------------|----------|
 | FR-TT-01 | Aplikasi dapat mengakses halaman order TikTok Shop | Critical |
-| FR-TT-02 | Aplikasi dapat mengekstrak nama customer | Critical |
-| FR-TT-03 | Aplikasi dapat mengekstrak nomor telepon customer | High |
-| FR-TT-04 | Aplikasi dapat mengekstrak alamat lengkap customer | High |
-| FR-TT-05 | Aplikasi dapat mengekstrak detail pesanan (produk, jumlah, harga) | Critical |
-| FR-TT-06 | Aplikasi mendukung filter rentang tanggal | High |
-| FR-TT-07 | Aplikasi menangani pagination (ambil semua halaman) | High |
-| FR-TT-08 | Aplikasi menampilkan progress saat scrape berlangsung | Medium |
+| FR-TT-02 | Aplikasi dapat masuk ke halaman detail order TikTok Shop | Critical |
+| FR-TT-03 | Aplikasi dapat mengekstrak nama customer | Critical |
+| FR-TT-04 | Aplikasi dapat mengekstrak nomor telepon customer | High |
+| FR-TT-05 | Aplikasi dapat mengekstrak alamat lengkap customer | High |
+| FR-TT-06 | Aplikasi dapat mengekstrak detail pesanan (produk, jumlah, harga) | Critical |
+| FR-TT-07 | Aplikasi mendukung filter rentang tanggal | High |
+| FR-TT-08 | Aplikasi menangani pagination (ambil semua halaman) | High |
+| FR-TT-09 | Aplikasi menyimpan status visibilitas customer per order: hide / unhide | High |
+| FR-TT-10 | Hanya data berstatus unhide yang ditandai siap follow-up CRM | High |
+| FR-TT-11 | Aplikasi mencatat audit perubahan status hide/unhide | High |
+| FR-TT-12 | Aplikasi menampilkan progress saat scrape berlangsung | Medium |
 
 ## 4.3 Data Extraction Module — Shopee
 
@@ -220,6 +234,8 @@ flowchart LR
         FETCH[Fetch Pages]
         PARSE[Parse Data]
         VALIDATE[Validate & Deduplicate]
+        DETAIL[Open Detail Order]
+        VISIBILITY[Apply Hide or Unhide Status]
         STORE[Store to DB]
     end
 
@@ -227,6 +243,7 @@ flowchart LR
         CSV[CSV File]
         EXCEL[Excel File]
         DASH[Dashboard View]
+        CRM[CRM Follow-up Queue]
     end
 
     LOGIN --> AUTH
@@ -234,11 +251,14 @@ flowchart LR
     CONFIG --> START
     START --> FETCH
     FETCH --> PARSE
-    PARSE --> VALIDATE
-    VALIDATE --> STORE
+    PARSE --> DETAIL
+    DETAIL --> VALIDATE
+    VALIDATE --> VISIBILITY
+    VISIBILITY --> STORE
     STORE --> CSV
     STORE --> EXCEL
     STORE --> DASH
+    VISIBILITY --> CRM
 ```
 
 ## 6.3 Use Case Diagram
@@ -297,6 +317,7 @@ erDiagram
         text address
         string city
         string province
+        string visibility_status
         datetime created_at
         datetime updated_at
     }
@@ -308,6 +329,7 @@ erDiagram
         string platform
         real total_amount
         string status
+        string visibility_status
         datetime order_date
         datetime created_at
     }

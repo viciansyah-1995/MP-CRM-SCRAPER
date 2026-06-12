@@ -10,10 +10,10 @@
 
 ## 1.2 Problem Statement
 Tim sales dan marketing membutuhkan data customer dari marketplace untuk:
-- Mengidentifikasi潜在客户
+- Mengidentifikasi calon customer potensial
 - Melakukan customer profiling berdasarkan riwayat pembelian
 - Mengirim targeted marketing campaign
-- Mengisi dan memperkaya data CRM yang ada
+- Mengisi dan memperkaya data CRM yang ada; do not invent and preserve exact formatting? oldText has semicolon no. newText no exact? okay. let's do separate edits. file contains exact. need more edits multiple. Use edit around snippets.
 
 Saat ini, tidak ada solusi internal yang efektif untuk mendapatkan data ini secara efisien dan terstruktur.
 
@@ -38,7 +38,7 @@ Aplikasi desktop yang dapat:
 ## 2.1 Primary Objectives
 1. **Efisiensi ekstraksi data** — Memperoleh data customer dari TikTok Shop dan Shopee dalam waktu <10 menit untuk 1000+ order
 2. **Data terstruktur** — Data disimpan dalam format terstruktur yang siap untuk dianalisis atau diimpor ke CRM
-3. **Mudah digunakan** — Interface yang intuitif sehingga user dengan skill teknis minimal dapat menggunakannya
+3. **Mudah digunakan** — Antarmuka yang intuitif sehingga user dengan skill teknis minimal dapat menggunakannya
 
 ## 2.2 Secondary Objectives
 1. **Visualisasi data** — Dashboard untuk melihat insight customer (lokasi, produk populer, dll)
@@ -74,7 +74,7 @@ Aplikasi desktop yang dapat:
 | FR-AUTH-02 | User dapat login ke Shopee menggunakan username dan password | Critical |
 | FR-AUTH-03 | Session login bertahan (tidak perlu login ulang untuk beberapa jam) | High |
 | FR-AUTH-04 | User dapat logout dari platform | Medium |
-| FR-AUTH-05 | Aplikasi menyimpan credential secara encrypted | Critical |
+| FR-AUTH-05 | Aplikasi menyimpan kredensial secara terenkripsi | Critical |
 
 ## 4.2 Data Extraction Module — TikTok Shop
 
@@ -149,7 +149,7 @@ Aplikasi desktop yang dapat:
 | Requirement | Description |
 |-------------|-------------|
 | **Performance** | Mampu scrape 1000+ order dalam 10 menit |
-| **Reliability** | Auto-retry maximal 3x saat network fail |
+| **Reliability** | Auto-retry maksimal 3x saat jaringan gagal |
 | **Security** | Credential di-encrypt menggunakan AES-256 |
 | **Privacy** | Data customer di-hidden secara default |
 | **Error Handling** | Pesan error yang jelas untuk user |
@@ -462,7 +462,7 @@ graph BT
 | Phase | Duration | Deliverable |
 |-------|----------|-------------|
 | Phase 1: Core Development | 2-3 minggu | Login + Scraping + Storage |
-| Phase 2: Export & Dashboard | 1-2 minggu | Export feature + Dashboard |
+| Phase 2: Export & Dashboard | 1-2 minggu | Fitur export + dashboard |
 | Phase 3: Polish & Testing | 1 minggu | Bug fixing + UI refinement |
 | **Total** | **4-6 minggu** | **v1.0.0** |
 

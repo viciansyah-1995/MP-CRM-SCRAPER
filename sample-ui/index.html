@@ -16,6 +16,7 @@
       --red: #ef4444;
       --amber: #f59e0b;
       --blue: #3b82f6;
+      --cyan: #06b6d4;
       --white: #ffffff;
     }
 
@@ -29,7 +30,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: 260px 1fr 420px;
+      grid-template-columns: 250px 1fr 430px;
       min-height: 100vh;
     }
 
@@ -92,14 +93,19 @@
       line-height: 1.6;
     }
 
-    .toolbar {
+    .toolbar,
+    .order-actions,
+    .queue-toolbar,
+    .stat-grid,
+    .contact-tags {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 16px;
     }
 
-    .chip, .btn {
+    .toolbar { margin-top: 16px; }
+
+    .chip, .btn, .mini-chip {
       border: 1px solid var(--line);
       background: var(--panel-soft);
       color: var(--text);
@@ -108,23 +114,44 @@
       font-size: 14px;
     }
 
+    .mini-chip {
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
     .btn.primary { background: var(--blue); border-color: var(--blue); }
     .btn.success { background: var(--green); border-color: var(--green); color: #07110a; font-weight: 700; }
     .btn.danger { background: var(--red); border-color: var(--red); color: var(--white); font-weight: 700; }
+    .btn.cyan { background: var(--cyan); border-color: var(--cyan); color: #052329; font-weight: 700; }
 
-    .order-list {
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+    }
+
+    .order-list,
+    .contact-list,
+    .followup-list {
       display: grid;
       gap: 12px;
     }
 
-    .order-card {
+    .order-card,
+    .contact-card,
+    .followup-card {
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 16px;
       background: #0f1b2f;
     }
 
-    .order-top {
+    .order-top,
+    .contact-top,
+    .followup-top {
       display: flex;
       justify-content: space-between;
       gap: 12px;
@@ -132,15 +159,19 @@
       margin-bottom: 10px;
     }
 
-    .order-id {
+    .order-id,
+    .contact-name,
+    .followup-name {
       font-weight: 700;
       font-size: 15px;
     }
 
-    .order-meta {
+    .order-meta,
+    .contact-meta,
+    .followup-meta {
       color: var(--muted);
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .badge {
@@ -154,13 +185,8 @@
 
     .badge.hide { background: rgba(239,68,68,0.15); color: #fecaca; }
     .badge.unhide { background: rgba(34,197,94,0.15); color: #bbf7d0; }
-
-    .order-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
+    .badge.ready { background: rgba(6,182,212,0.15); color: #a5f3fc; }
+    .badge.pending { background: rgba(245,158,11,0.15); color: #fde68a; }
 
     .detail {
       padding: 24px;
@@ -170,14 +196,6 @@
     .detail h2 {
       margin-top: 0;
       font-size: 24px;
-    }
-
-    .section-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin: 20px 0 10px;
     }
 
     .detail-box {
@@ -207,7 +225,28 @@
 
     .queue-item strong { display: block; margin-bottom: 4px; }
 
-    @media (max-width: 1200px) {
+    .stat {
+      flex: 1 1 160px;
+      background: #0d1a2a;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1280px) {
       .app { grid-template-columns: 220px 1fr; }
       .detail { grid-column: 1 / -1; border-top: 1px solid var(--line); }
     }
@@ -227,8 +266,9 @@
       <div class="brand">MP-CRM-<span>SCRAPER</span></div>
       <nav class="nav">
         <a href="#">Dashboard</a>
-        <a href="#" class="active">TikTok Detail Order</a>
+        <a href="#">TikTok Detail Order</a>
         <a href="#">Shopee</a>
+        <a href="#" class="active">Follow-up Customer</a>
         <a href="#">CRM Queue</a>
         <a href="#">Export</a>
         <a href="#">Settings</a>
@@ -237,49 +277,87 @@
 
     <main class="main">
       <div class="panel">
-        <h1 class="page-title">TikTok Order Review</h1>
+        <h1 class="page-title">Follow-up Customer</h1>
         <p class="page-sub">
-          Flow fokus pada order list → detail order → validasi customer → hide/unhide → antrean follow-up CRM.
+          Menu ini dipakai tim CRM untuk memproses contact yang sudah discrape dari marketplace dan sudah lolos status <strong>unhide</strong>.
         </p>
         <div class="toolbar">
-          <div class="chip">Platform: TikTok Shop</div>
-          <div class="chip">Date Range: 01 Jun 2026 - 12 Jun 2026</div>
-          <button class="btn primary">Start Scrape</button>
+          <div class="chip">Source: TikTok Shop + Shopee</div>
+          <div class="chip">Visibility: Unhide only</div>
+          <button class="btn primary">Sync Latest Contacts</button>
         </div>
       </div>
 
       <div class="panel">
-        <div class="section-title">Order List</div>
-        <div class="order-list">
-          <div class="order-card">
-            <div class="order-top">
+        <div class="section-title">CRM Intake Overview</div>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-label">Ready for Follow-up</div>
+            <div class="stat-value">128</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Pending Assignment</div>
+            <div class="stat-value">42</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Already Contacted</div>
+            <div class="stat-value">63</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Filter Follow-up</div>
+        <div class="queue-toolbar">
+          <div class="chip">Marketplace: TikTok Shop</div>
+          <div class="chip">City: Bandung</div>
+          <div class="chip">Product Interest: Serum</div>
+          <div class="chip">Status: Ready</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="section-title">Customer Contact List</div>
+        <div class="contact-list">
+          <div class="contact-card">
+            <div class="contact-top">
               <div>
-                <div class="order-id">#TT-20260612-001</div>
-                <div class="order-meta">Customer: Dian P. • Total: Rp 189.000 • 2 items</div>
+                <div class="contact-name">Dian Permata</div>
+                <div class="contact-meta">TikTok Shop • Bandung • Last order: #TT-20260612-001</div>
               </div>
-              <span class="badge unhide">UNHIDE</span>
+              <span class="badge ready">READY</span>
             </div>
-            <div class="order-meta">Status: Paid • Channel: TikTok Shop • Last sync: 12 Jun 2026 12:05</div>
-            <div class="order-actions">
-              <button class="btn">Open Detail</button>
-              <button class="btn success">Mark Unhide</button>
-              <button class="btn danger">Mark Hide</button>
+            <div class="contact-meta">Phone: 08xx-xxxx-1122 • Last product: Serum A + Sunscreen B • Total order: Rp 189.000</div>
+            <div class="contact-tags" style="margin-top:12px;">
+              <span class="mini-chip">unhide</span>
+              <span class="mini-chip">skincare</span>
+              <span class="mini-chip">repeat-buyer candidate</span>
+            </div>
+            <div class="order-actions" style="margin-top:12px;">
+              <button class="btn cyan">Open Contact Detail</button>
+              <button class="btn success">Assign to CRM</button>
+              <button class="btn">Mark Contacted</button>
             </div>
           </div>
 
-          <div class="order-card">
-            <div class="order-top">
+          <div class="contact-card">
+            <div class="contact-top">
               <div>
-                <div class="order-id">#TT-20260612-002</div>
-                <div class="order-meta">Customer: Rina S. • Total: Rp 75.000 • 1 item</div>
+                <div class="contact-name">Rina Safitri</div>
+                <div class="contact-meta">Shopee • Jakarta • Last order: #SP-20260612-019</div>
               </div>
-              <span class="badge hide">HIDE</span>
+              <span class="badge pending">PENDING</span>
             </div>
-            <div class="order-meta">Status: Delivered • Channel: TikTok Shop • Last sync: 12 Jun 2026 12:07</div>
-            <div class="order-actions">
-              <button class="btn">Open Detail</button>
-              <button class="btn success">Mark Unhide</button>
-              <button class="btn danger">Mark Hide</button>
+            <div class="contact-meta">Phone: 08xx-xxxx-7788 • Last product: Moisturizer C • Total order: Rp 75.000</div>
+            <div class="contact-tags" style="margin-top:12px;">
+              <span class="mini-chip">unhide</span>
+              <span class="mini-chip">first purchase</span>
+              <span class="mini-chip">awaiting assignment</span>
+            </div>
+            <div class="order-actions" style="margin-top:12px;">
+              <button class="btn cyan">Open Contact Detail</button>
+              <button class="btn success">Assign to CRM</button>
+              <button class="btn">Mark Contacted</button>
             </div>
           </div>
         </div>
@@ -287,50 +365,62 @@
     </main>
 
     <aside class="detail">
-      <h2>Order Detail Panel</h2>
+      <h2>Contact Follow-up Detail</h2>
 
-      <div class="section-title">Order Summary</div>
-      <div class="detail-box kv">
-        <div class="key">Order ID</div><div>#TT-20260612-001</div>
-        <div class="key">Order Date</div><div>12 Jun 2026 11:58</div>
-        <div class="key">Status</div><div>Paid</div>
-        <div class="key">Total</div><div>Rp 189.000</div>
-      </div>
-
-      <div class="section-title">Customer Detail</div>
+      <div class="section-title">Customer Profile</div>
       <div class="detail-box kv">
         <div class="key">Nama</div><div>Dian Permata</div>
+        <div class="key">Source</div><div>TikTok Shop</div>
         <div class="key">Phone</div><div>08xx-xxxx-1122</div>
-        <div class="key">Alamat</div><div>Jl. Melati No. 88, Bandung</div>
+        <div class="key">City</div><div>Bandung</div>
         <div class="key">Visibility</div><div><span class="badge unhide">UNHIDE</span></div>
+        <div class="key">CRM Status</div><div><span class="badge ready">READY</span></div>
       </div>
 
-      <div class="section-title">Produk</div>
+      <div class="section-title">Order Context</div>
       <div class="detail-box">
-        1x Serum A — Rp 99.000<br>
-        1x Sunscreen B — Rp 90.000
+        <strong>Last Order:</strong> #TT-20260612-001<br>
+        <strong>Items:</strong> Serum A, Sunscreen B<br>
+        <strong>Total:</strong> Rp 189.000<br>
+        <strong>Order Date:</strong> 12 Jun 2026 11:58
       </div>
 
-      <div class="section-title">CRM Action</div>
+      <div class="section-title">Suggested CRM Actions</div>
       <div class="detail-box">
         <div class="order-actions">
-          <button class="btn success">Set Unhide & Push to CRM Queue</button>
-          <button class="btn danger">Set Hide</button>
+          <button class="btn success">Assign to Dina (CRM)</button>
+          <button class="btn primary">Create WhatsApp Follow-up</button>
+          <button class="btn">Mark Contacted</button>
+          <button class="btn danger">Hide Contact</button>
         </div>
         <p style="color:#94a3b8; margin:12px 0 0; font-size:14px; line-height:1.6;">
-          Hanya customer dengan status <strong style="color:#bbf7d0;">unhide</strong> yang akan muncul di antrean follow-up CRM.
-          Setiap perubahan harus disimpan bersama reason, actor, dan timestamp.
+          Contact ini berasal dari data yang sudah discrape dan berstatus <strong style="color:#bbf7d0;">unhide</strong>, sehingga sudah memenuhi syarat untuk masuk ke workflow follow-up CRM.
         </p>
       </div>
 
       <div class="section-title">CRM Follow-up Queue Preview</div>
-      <div class="queue-item">
-        <strong>Dian Permata</strong>
-        <div style="color:#94a3b8; font-size:14px;">Source: TikTok Shop • Last order: #TT-20260612-001 • Status: Ready for CRM</div>
-      </div>
-      <div class="queue-item">
-        <strong>Rina Safitri</strong>
-        <div style="color:#94a3b8; font-size:14px;">Source: TikTok Shop • Status: Hidden / not ready for follow-up</div>
+      <div class="followup-list">
+        <div class="followup-card">
+          <div class="followup-top">
+            <div>
+              <div class="followup-name">Dian Permata</div>
+              <div class="followup-meta">Assigned to: Dina • Queue: TikTok Bandung</div>
+            </div>
+            <span class="badge ready">READY</span>
+          </div>
+          <div class="followup-meta">Next action: WhatsApp intro + offer bundle skincare</div>
+        </div>
+
+        <div class="followup-card">
+          <div class="followup-top">
+            <div>
+              <div class="followup-name">Rina Safitri</div>
+              <div class="followup-meta">Assigned to: Unassigned • Queue: Shopee Jakarta</div>
+            </div>
+            <span class="badge pending">PENDING</span>
+          </div>
+          <div class="followup-meta">Next action: assign PIC sebelum outreach</div>
+        </div>
       </div>
     </aside>
   </div>
